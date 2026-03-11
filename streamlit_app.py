@@ -55,20 +55,34 @@ st.markdown("""
         border-radius: 10px;
     }
     </style>
-    """, unsafe_allow_stdio=True, unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
 # -- DATA LOADING --
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
 def load_json(path):
-    if not os.path.exists(path): return None
-    with open(path, 'r', encoding='utf-8') as f:
-        return json.load(f)
+    print(f"Attempting to load JSON: {path}")
+    if not os.path.exists(path): 
+        print(f"File NOT found: {path}")
+        return None
+    try:
+        with open(path, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except Exception as e:
+        print(f"Error loading JSON {path}: {e}")
+        return None
 
 def load_text(path):
-    if not os.path.exists(path): return None
-    with open(path, 'r', encoding='utf-8') as f:
-        return f.read()
+    print(f"Attempting to load TEXT: {path}")
+    if not os.path.exists(path): 
+        print(f"File NOT found: {path}")
+        return None
+    try:
+        with open(path, 'r', encoding='utf-8') as f:
+            return f.read()
+    except Exception as e:
+        print(f"Error loading TEXT {path}: {e}")
+        return None
 
 # Load data paths
 reviews_path = os.path.join(PROJECT_ROOT, 'phase1_ingestion', 'groww_reviews_cleaned.json')
@@ -129,35 +143,41 @@ with tab2:
         with col_c1:
             st.subheader("Theme Distribution")
             df_class = pd.DataFrame(classified)
-            theme_counts = df_class['theme'].value_counts().reset_index()
-            theme_counts.columns = ['Theme', 'Count']
-            
-            fig_bar = px.bar(
-                theme_counts, 
-                x='Count', 
-                y='Theme', 
-                orientation='h',
-                color_discrete_sequence=['#00d09c'],
-                template="plotly_dark"
-            )
-            fig_bar.update_layout(xaxis_title="Number of Reviews", yaxis_title="")
-            st.plotly_chart(fig_bar, use_container_width=True)
+            if not df_class.empty and 'theme' in df_class.columns:
+                theme_counts = df_class['theme'].value_counts().reset_index()
+                theme_counts.columns = ['Theme', 'Count']
+                
+                fig_bar = px.bar(
+                    theme_counts, 
+                    x='Count', 
+                    y='Theme', 
+                    orientation='h',
+                    color_discrete_sequence=['#00d09c'],
+                    template="plotly_dark"
+                )
+                fig_bar.update_layout(xaxis_title="Number of Reviews", yaxis_title="")
+                st.plotly_chart(fig_bar, use_container_width=True)
+            else:
+                st.info("No theme data available to chart.")
             
         with col_c2:
             st.subheader("Rating distribution")
             df_revs = pd.DataFrame(reviews)
-            rating_counts = df_revs['rating(5star)'].value_counts().sort_index().reset_index()
-            rating_counts.columns = ['Rating', 'Count']
-            
-            fig_pie = px.pie(
-                rating_counts, 
-                values='Count', 
-                names='Rating', 
-                hole=0.4,
-                color_discrete_sequence=['#ef4444', '#ff6b35', '#eab308', '#5b86e5', '#00d09c'],
-                template="plotly_dark"
-            )
-            st.plotly_chart(fig_pie, use_container_width=True)
+            if not df_revs.empty and 'rating(5star)' in df_revs.columns:
+                rating_counts = df_revs['rating(5star)'].value_counts().sort_index().reset_index()
+                rating_counts.columns = ['Rating', 'Count']
+                
+                fig_pie = px.pie(
+                    rating_counts, 
+                    values='Count', 
+                    names='Rating', 
+                    hole=0.4,
+                    color_discrete_sequence=['#ef4444', '#ff6b35', '#eab308', '#5b86e5', '#00d09c'],
+                    template="plotly_dark"
+                )
+                st.plotly_chart(fig_pie, use_container_width=True)
+            else:
+                st.info("No rating data available to chart.")
     else:
         st.info("Run classification to see analytics.")
 
