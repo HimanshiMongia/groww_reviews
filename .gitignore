@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+venv/
+env/
+.venv/
+.vscode/
+.idea/
+
+# Distribution / Data (We keep the JSONs for Streamlit to read, but ignore temp or large binary data if any)
+logs/*.log
+
+# Project specific
+phase1_ingestion/groww_reviews_cleaned.json
+# Wait, we WANT the data in the repo for Streamlit to see according to the plan.
+# However, the user might want a "clean" repo first.
+# But the plan says "Reads results directly from the repository".
+# So I should ALLOW the JSON/MD files.
+
+# OS junk
+.DS_Store
+Thumbs.db

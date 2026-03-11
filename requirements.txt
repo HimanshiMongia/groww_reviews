@@ -1,0 +1,13 @@
+google-play-scraper
+groq
+google-generativeai
+python-dotenv
+pandas
+langdetect
+emoji
+flask
+schedule
+markdown
+streamlit
+pandas
+plotly

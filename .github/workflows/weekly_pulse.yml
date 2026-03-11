@@ -1,0 +1,49 @@
+# Groww Weekly Pulse - Automated Pipeline
+# Runs every Monday at 1:00 PM IST (7:30 AM UTC) via cron schedule.
+# Can also be triggered manually via workflow_dispatch.
+
+name: Weekly Pulse Pipeline
+
+on:
+  schedule:
+    # 1:00 PM IST = 7:30 AM UTC (IST is UTC+5:30)
+    - cron: '30 7 * * 1'  # Every Monday at 07:30 UTC
+  workflow_dispatch:  # Allow manual trigger from GitHub UI
+
+jobs:
+  run-pulse:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run scheduler with immediate execution
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          EMAIL_SENDER: ${{ secrets.EMAIL_SENDER }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+          EMAIL_RECEIVER: ${{ secrets.EMAIL_RECEIVER }}
+        run: python scheduler.py --run-now
+
+      - name: Commit and push results
+        if: success()
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+          git add phase1_ingestion/groww_reviews_cleaned.json \
+                  phase2_theme_discovery/discovered_themes.json \
+                  phase2_theme_discovery/classified_reviews.json \
+                  phase3_note_generation/weekly_pulse.md \
+                  phase4_email_delivery/weekly_pulse_email.html
+          git commit -m "chore: update weekly pulse results [skip ci]" || echo "No changes to commit"
+          git push
