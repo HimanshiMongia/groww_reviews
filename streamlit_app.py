@@ -24,13 +24,13 @@ st.markdown("""
         color: #e8e8f0;
     }
     
-    /* Meta tags */
     .stApp > header { background: transparent; }
     
     /* Metrics Styling */
     [data-testid="stMetricValue"] {
         color: #00d09c !important;
         font-weight: 700;
+        font-size: 2.2rem !important;
     }
     [data-testid="metric-container"] {
         background: rgba(255, 255, 255, 0.03);
@@ -46,42 +46,38 @@ st.markdown("""
         letter-spacing: -0.5px;
     }
     h1 { color: #00d09c; font-weight: 800; }
+    h2 { color: #f0f0f5; margin-top: 1.5rem !important; }
     
     /* Cards for Themes */
     .theme-card {
         background: rgba(255, 255, 255, 0.05);
         border-radius: 12px;
-        padding: 20px;
-        margin-bottom: 15px;
+        padding: 15px;
+        margin-bottom: 12px;
         border-left: 4px solid #00d09c;
+        transition: transform 0.2s;
+    }
+    .theme-card:hover {
+        transform: translateX(5px);
+        background: rgba(255, 255, 255, 0.08);
     }
     .theme-header {
         color: #00d09c;
         font-weight: bold;
-        font-size: 1.2rem;
-        margin-bottom: 10px;
+        font-size: 1.1rem;
+        margin-bottom: 5px;
     }
     .review-text {
         font-style: italic;
         color: #b0b0c0;
-        font-size: 0.95rem;
+        font-size: 0.9rem;
     }
     
-    /* Tabs Styling */
-    .stTabs [data-baseweb="tab-list"] {
-        gap: 20px;
-    }
-    .stTabs [data-baseweb="tab"] {
-        padding: 10px 20px;
-        background-color: transparent;
-        border-radius: 8px;
-        color: #8080a0;
-        font-weight: 600;
-    }
-    .stTabs [aria-selected="true"] {
-        background-color: rgba(0, 208, 156, 0.1) !important;
-        color: #00d09c !important;
-        border-bottom: 2px solid #00d09c !important;
+    /* Section Divider */
+    .section-divider {
+        height: 1px;
+        background: rgba(255, 255, 255, 0.1);
+        margin: 2rem 0;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -141,87 +137,104 @@ if reviews:
     m2.metric("Avg. App Rating", f"{avg_rating:.2f} ⭐")
     m3.metric("Themes Identified", len(themes_data.get('themes', [])))
     m4.metric("Insights Generated", "3 Core")
+    
+    st.write("")
+    st.write("")
+    
+    # -- INTEGRATED ANALYTICS (Directly below metrics) --
+    c1, c2 = st.columns([1.5, 1])
+    
+    with c1:
+        st.subheader("📊 Theme Distribution")
+        if classified:
+            df_class = pd.DataFrame(classified)
+            theme_counts = df_class['theme'].value_counts().reset_index()
+            theme_counts.columns = ['Theme', 'Count']
+            
+            # Custom Sort: Decreasing order, but 'Other' at the end
+            others_mask = theme_counts['Theme'].str.lower().isin(['other', 'others'])
+            df_others = theme_counts[others_mask]
+            df_main = theme_counts[~others_mask].sort_values('Count', ascending=True) # Asc for horizontal plot
+            
+            # Combine back (Main themes first, then Other)
+            # Since Plotly horizontal bars plot bottom-to-top, we reverse the logical order
+            # To show highest on TOP: [Other, ...Smallest, ...Largest]
+            final_df = pd.concat([df_others, df_main])
+            
+            fig = px.bar(
+                final_df, x='Count', y='Theme', orientation='h',
+                color='Count', color_continuous_scale='Viridis',
+                template='plotly_dark'
+            )
+            fig.update_layout(showlegend=False, coloraxis_showscale=False, height=350, margin=dict(l=0, r=0, t=20, b=0))
+            st.plotly_chart(fig, use_container_width=True)
+            
+    with c2:
+        st.subheader("🎯 Rating Distribution")
+        df_revs = pd.DataFrame(reviews)
+        rating_counts = df_revs['rating(5star)'].value_counts().sort_index().reset_index()
+        rating_counts.columns = ['Rating', 'Count']
+        
+        fig_donut = go.Figure(data=[go.Pie(
+            labels=rating_counts['Rating'].apply(lambda x: f"{x} ⭐"),
+            values=rating_counts['Count'],
+            hole=.6,
+            marker=dict(colors=['#ef4444', '#f97316', '#eab308', '#3b82f6', '#00d09c']),
+            textinfo='label+percent'
+        )])
+        fig_donut.update_layout(
+            template='plotly_dark',
+            showlegend=False,
+            margin=dict(t=0, b=0, l=0, r=0),
+            height=350,
+            annotations=[dict(text='Ratings', x=0.5, y=0.5, font_size=18, showarrow=False, font_color="#00d09c")]
+        )
+        st.plotly_chart(fig_donut, use_container_width=True)
+        
+    st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
 else:
-    st.info("Run the pipeline locally to populate metrics.")
+    st.info("No data available. Run the pipeline locally or in cloud.")
 
-# -- TABS --
-tab1, tab2, tab3, tab4 = st.tabs(["🎯 Weekly Pulse", "📊 Sentiment Analytics", "🔍 Theme Explorer", "📧 Email Preview"])
+# -- TABS (Rest of the features) --
+tab1, tab2, tab3 = st.tabs(["🎯 Weekly Pulse Report", "🔍 Theme Explorer", "📧 Email Preview"])
 
 with tab1:
     if pulse_md:
         st.markdown(pulse_md)
         st.download_button("Download Report", pulse_md, file_name="groww_weekly_pulse.md")
     else:
-        st.info("The Pulse Report will appear here once the pipeline runs.")
+        st.info("Weekly pulse report not generated.")
 
 with tab2:
-    if reviews:
-        c1, c2 = st.columns([1.2, 1])
-        
-        with c1:
-            st.subheader("Theme Volume")
-            if classified:
-                df_class = pd.DataFrame(classified)
-                theme_counts = df_class['theme'].value_counts().reset_index()
-                theme_counts.columns = ['Theme', 'Count']
-                fig = px.bar(
-                    theme_counts, x='Count', y='Theme', orientation='h',
-                    color='Count', color_continuous_scale='Viridis',
-                    template='plotly_dark'
-                )
-                fig.update_layout(showlegend=False, coloraxis_showscale=False, height=450)
-                st.plotly_chart(fig, use_container_width=True)
-                
-        with c2:
-            st.subheader("Rating Breakdown")
-            df_revs = pd.DataFrame(reviews)
-            rating_counts = df_revs['rating(5star)'].value_counts().sort_index().reset_index()
-            rating_counts.columns = ['Rating', 'Count']
-            
-            # Premium Doughnut Chart
-            fig_donut = go.Figure(data=[go.Pie(
-                labels=rating_counts['Rating'].apply(lambda x: f"{x} ⭐"),
-                values=rating_counts['Count'],
-                hole=.6,
-                marker=dict(colors=['#ef4444', '#f97316', '#eab308', '#3b82f6', '#00d09c']),
-                textinfo='label+percent'
-            )])
-            fig_donut.update_layout(
-                template='plotly_dark',
-                showlegend=False,
-                margin=dict(t=0, b=0, l=0, r=0),
-                height=450,
-                annotations=[dict(text='Ratings', x=0.5, y=0.5, font_size=20, showarrow=False)]
-            )
-            st.plotly_chart(fig_donut, use_container_width=True)
-    else:
-        st.info("No data available for charts.")
-
-with tab3:
-    st.subheader("Explore Reviews by Theme")
+    st.subheader("Review Deep Dive")
     if classified:
         df_class = pd.DataFrame(classified)
-        selected_theme = st.selectbox("Select a Theme to Filter", ["All"] + sorted(list(df_class['theme'].unique())))
         
+        c_filter1, c_filter2 = st.columns([1, 2])
+        with c_filter1:
+            selected_theme = st.selectbox("Filter by Theme", ["All"] + sorted(list(df_class['theme'].unique())))
+        with c_filter2:
+            st.write("") # Spacer
+            st.write(f"*Showing top reviews for **{selected_theme}***")
+
         filtered_df = df_class if selected_theme == "All" else df_class[df_class['theme'] == selected_theme]
         
-        # Display as cards for premium look
-        for _, row in filtered_df.head(20).iterrows():
+        # Display cards
+        for _, row in filtered_df.head(30).iterrows():
             stars = "⭐" * int(row['rating(5star)'])
             st.markdown(f"""
                 <div class="theme-card">
                     <div class="theme-header">{row['theme']} | {stars}</div>
                     <div class="review-text">"{row['review']}"</div>
-                    <div style="font-size:0.8rem; color:#606080; margin-top:5px;">{row['date time']}</div>
+                    <div style="font-size:0.75rem; color:#606080; margin-top:5px;">Date: {row['date time']}</div>
                 </div>
             """, unsafe_allow_html=True)
     else:
-        st.info("Classify reviews to see theme explorer.")
+        st.info("No classified reviews available.")
 
-with tab4:
+with tab3:
     if email_html:
-        st.subheader("Automated Stakeholder Report")
-        st.info("This is how the email pulse looks when delivered to the Groww leadership team.")
+        st.subheader("Stakeholder Email Preview")
         components.html(email_html, height=800, scrolling=True)
     else:
         st.info("Email template not ready.")
