@@ -13,7 +13,7 @@ env/
 logs/*.log
 
 # Project specific
-phase1_ingestion/groww_reviews_cleaned.json
+# phase1_ingestion/groww_reviews_cleaned.json
 # Wait, we WANT the data in the repo for Streamlit to see according to the plan.
 # However, the user might want a "clean" repo first.
 # But the plan says "Reads results directly from the repository".
