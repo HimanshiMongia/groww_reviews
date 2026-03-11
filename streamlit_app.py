@@ -119,6 +119,10 @@ with col_logo:
     st.markdown('<div style="background-color:#00d09c; color:#0f0f23; font-weight:bold; width:50px; height:50px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:24px;">G</div>', unsafe_allow_html=True)
 with col_title:
     st.title("Groww Weekly Pulse")
+    st.markdown("""
+        *A weekly pulse of Groww app's user sentiment. Reviews are automatically scraped from the Google Play Store 
+        and updated every week to provide actionable product insights.*
+    """)
 
 if pulse_md:
     mtime = os.path.getmtime(pulse_path)
