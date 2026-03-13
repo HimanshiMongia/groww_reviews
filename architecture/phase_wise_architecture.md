@@ -1,18 +1,14 @@
-# Groww Weekly Pulse - Phase-Wise Architecture
+# Groww Weekly Pulse Architecture
 
-This document outlines the architectural evolution of the Groww Weekly Pulse project, broken down into the 4 key phases.
+The system is a decoupled data pipeline and visualization dashboard.
 
-## High-Level Workflow
-
-```mermaid
-graph TD
-    S[Scheduler] -->|Every Monday 1 PM IST| A
-    A[Play Store] -->|google-play-scraper| B(Phase 1: Review Ingestion and Cleaning)
-    B -->|Clean Data| C(Phase 2: Theme Discovery & Classification - Groq)
-    C -->|Themes & Grouped Reviews| D(Phase 3: Weekly Note Generation - Gemini)
-    D -->|Markdown/HTML Note| E(Phase 4: Email Delivery)
-    E -->|Draft Email| F[Recipient Inbox]
-```
+## 🏗️ System Flow
+1. **GitHub Actions (The Worker)**: Runs every Monday at 1 PM IST.
+   - Triggers `pulse.py` to scrape, analyze (Groq/Gemini), and email.
+   - Commits generated results (`.json`, `.md`) back to the repo.
+2. **Streamlit (The Viewer)**: Pulls data from the GitHub repo.
+   - Provides a premium dashboard with charts and historical views.
+   - Automatically refreshes when GitHub Actions pushes new data.
 
 ---
 
