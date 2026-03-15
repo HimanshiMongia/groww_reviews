@@ -18,12 +18,7 @@ st.set_page_config(
 # -- PREMIUM CSS --
 st.markdown("""
     <style>
-    /* Dark Premium Background */
-    [data-testid="stAppViewContainer"] {
-        background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
-        color: #e8e8f0;
-    }
-    
+    /* Remove fixed background color to let user theme handle it */
     .stApp > header { background: transparent; }
     
     /* Metrics Styling */
@@ -32,12 +27,14 @@ st.markdown("""
         font-weight: 700;
         font-size: 2.2rem !important;
     }
+    
     [data-testid="metric-container"] {
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(128, 128, 128, 0.05);
+        border: 1px solid rgba(128, 128, 128, 0.2);
         border-radius: 16px;
         padding: 20px;
         backdrop-filter: blur(10px);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
     }
 
     /* Headings */
@@ -46,20 +43,23 @@ st.markdown("""
         letter-spacing: -0.5px;
     }
     h1 { color: #00d09c; font-weight: 800; }
-    h2 { color: #f0f0f5; margin-top: 1.5rem !important; }
+    h2 { margin-top: 1.5rem !important; }
     
     /* Cards for Themes */
     .theme-card {
-        background: rgba(255, 255, 255, 0.05);
+        background: rgba(128, 128, 128, 0.05);
         border-radius: 12px;
         padding: 15px;
         margin-bottom: 12px;
+        border: 1px solid rgba(128, 128, 128, 0.2);
         border-left: 4px solid #00d09c;
-        transition: transform 0.2s;
+        transition: transform 0.2s, box-shadow 0.2s;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     }
     .theme-card:hover {
         transform: translateX(5px);
-        background: rgba(255, 255, 255, 0.08);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        background: rgba(128, 128, 128, 0.1);
     }
     .theme-header {
         color: #00d09c;
@@ -69,15 +69,21 @@ st.markdown("""
     }
     .review-text {
         font-style: italic;
-        color: #b0b0c0;
+        opacity: 0.8;
         font-size: 0.9rem;
     }
     
     /* Section Divider */
     .section-divider {
         height: 1px;
-        background: rgba(255, 255, 255, 0.1);
+        background: rgba(128, 128, 128, 0.2);
         margin: 2rem 0;
+    }
+    
+    .footer-text {
+        text-align: center;
+        opacity: 0.7;
+        font-size: 12px;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -167,8 +173,7 @@ if reviews:
             
             fig = px.bar(
                 final_df, x='Count', y='Theme', orientation='h',
-                color='Count', color_continuous_scale='Viridis',
-                template='plotly_dark'
+                color='Count', color_continuous_scale='Viridis'
             )
             fig.update_layout(showlegend=False, coloraxis_showscale=False, height=350, margin=dict(l=0, r=0, t=20, b=0))
             st.plotly_chart(fig, use_container_width=True)
@@ -187,7 +192,6 @@ if reviews:
             textinfo='label+percent'
         )])
         fig_donut.update_layout(
-            template='plotly_dark',
             showlegend=False,
             margin=dict(t=0, b=0, l=0, r=0),
             height=350,
@@ -245,4 +249,4 @@ with tab3:
 
 # -- FOOTER --
 st.markdown("---")
-st.markdown("<div style='text-align: center; color: #a0a0b8; font-size: 12px;'>Build with ❤️ for Groww Product Team</div>", unsafe_allow_html=True)
+st.markdown("<div class='footer-text'>Build with ❤️ for Groww Product Team</div>", unsafe_allow_html=True)
