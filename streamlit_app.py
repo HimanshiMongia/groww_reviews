@@ -186,6 +186,34 @@ with col2:
             <li>Identifies top recurring features and themes</li>
             <li>Extracts meaningful user quotes for context</li>
             <li>Generates actionable product recommendations</li>
+            <li>Automatically delivers weekly insights via email</li>
+        </ul>
+    </div>
+    """, unsafe_allow_html=True)
+
+st.write("")
+col3, col4 = st.columns(2)
+
+with col3:
+    st.markdown("""
+    <div class="info-card" style="border-left: 4px solid #8b5cf6;">
+        <h4 style="color: #8b5cf6;">🤖 Automation & Workflow Integration</h4>
+        <ul>
+            <li>Automatically processes new Play Store reviews on a weekly basis</li>
+            <li>Generates updated themes, user quotes, and actionable recommendations</li>
+            <li>Sends a structured insights report via email every Monday at a scheduled time</li>
+        </ul>
+    </div>
+    """, unsafe_allow_html=True)
+
+with col4:
+    st.markdown("""
+    <div class="info-card" style="border-left: 4px solid #10b981;">
+        <h4 style="color: #10b981;">💡 How Product Teams Use This</h4>
+        <ul>
+            <li><strong>Monday:</strong> Receive automated insights report via email</li>
+            <li><strong>Review:</strong> Identify key issues and emerging trends</li>
+            <li><strong>Action:</strong> Use insights for sprint planning and prioritization</li>
         </ul>
     </div>
     """, unsafe_allow_html=True)
