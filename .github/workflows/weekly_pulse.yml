@@ -26,14 +26,14 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Run scheduler with immediate execution
+      - name: Run pipeline
         env:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           EMAIL_SENDER: ${{ secrets.EMAIL_SENDER }}
           EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
           EMAIL_RECEIVER: ${{ secrets.EMAIL_RECEIVER }}
-        run: python scheduler.py --run-now
+        run: python pulse.py
 
       - name: Commit and push results
         if: success()
