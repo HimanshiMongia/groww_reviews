@@ -85,6 +85,39 @@ st.markdown("""
         opacity: 0.7;
         font-size: 12px;
     }
+
+    /* Case Study Custom CSS */
+    .hero-title {
+        font-size: 2.8rem !important;
+        line-height: 1.2;
+        margin-bottom: 0.5rem;
+    }
+    .hero-subtitle {
+        font-size: 1.2rem;
+        opacity: 0.8;
+        margin-bottom: 2rem;
+    }
+    .info-card {
+        background: rgba(128, 128, 128, 0.05);
+        border: 1px solid rgba(128, 128, 128, 0.2);
+        border-radius: 12px;
+        padding: 20px;
+        height: 100%;
+    }
+    .info-card h4 {
+        color: #00d09c;
+        margin-bottom: 15px;
+        font-family: 'Inter', sans-serif;
+        letter-spacing: -0.5px;
+    }
+    .problem-highlight {
+        border-left: 4px solid #ef4444;
+        padding-left: 15px;
+        margin-bottom: 20px;
+        background: rgba(239, 68, 68, 0.05);
+        padding: 15px;
+        border-radius: 0 8px 8px 0;
+    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -119,16 +152,55 @@ classified = load_json(classified_path) or []
 pulse_md = load_text(pulse_path)
 email_html = load_text(email_path)
 
-# -- HEADER --
-col_logo, col_title = st.columns([1, 10])
-with col_logo:
-    st.markdown('<div style="background-color:#00d09c; color:#0f0f23; font-weight:bold; width:50px; height:50px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:24px;">G</div>', unsafe_allow_html=True)
-with col_title:
-    st.title("Groww Weekly Pulse")
+# -- HEADER & STORY SECTION --
+st.markdown('<h1 class="hero-title">Weekly Pulse: Turning User Reviews into Actionable Product Insights</h1>', unsafe_allow_html=True)
+st.markdown('<div class="hero-subtitle">A system designed to help product teams quickly analyze user feedback and prioritize improvements.</div>', unsafe_allow_html=True)
+
+st.markdown("""
+<div class="problem-highlight">
+    <strong>The Problem:</strong> Product teams face a massive volume of noisy, unstructured reviews. 
+    Manually extracting actionable insights is slow, leading to delayed product decisions and 
+    difficulty in prioritizing high-impact improvements.
+</div>
+""", unsafe_allow_html=True)
+
+col1, col2 = st.columns(2)
+
+with col1:
     st.markdown("""
-        *A weekly pulse of Groww app's user sentiment. Reviews are automatically scraped from the Google Play Store 
-        and updated every week to provide actionable product insights.*
-    """)
+    <div class="info-card">
+        <h4>🎯 Target Users</h4>
+        <ul>
+            <li><strong>Product Managers:</strong> Prioritize backlog and shape roadmaps</li>
+            <li><strong>Product Analysts:</strong> Identify emerging trends and track sentiment</li>
+        </ul>
+    </div>
+    """, unsafe_allow_html=True)
+
+with col2:
+    st.markdown("""
+    <div class="info-card">
+        <h4>⚙️ What This Tool Does</h4>
+        <ul>
+            <li>Filters low-quality, vague reviews</li>
+            <li>Identifies top recurring features and themes</li>
+            <li>Extracts meaningful user quotes for context</li>
+            <li>Generates actionable product recommendations</li>
+        </ul>
+    </div>
+    """, unsafe_allow_html=True)
+
+st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
+
+# -- DASHBOARD OUTPUT SECTION --
+st.markdown("## Sample Weekly Insights Report")
+st.write("Below is the live dashboard generated from the most recent batch of reviews.")
+
+col_logo, col_title = st.columns([1, 15])
+with col_logo:
+    st.markdown('<div style="background-color:#00d09c; color:#0f0f23; font-weight:bold; width:50px; height:50px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:24px; margin-top:10px;">G</div>', unsafe_allow_html=True)
+with col_title:
+    st.header("Groww Weekly Pulse")
 
 if pulse_md:
     mtime = os.path.getmtime(pulse_path)
@@ -246,6 +318,38 @@ with tab3:
         components.html(email_html, height=800, scrolling=True)
     else:
         st.info("Email template not ready.")
+
+# -- IMPACT & FUTURE SECTION --
+st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
+
+st.markdown("## Impact & Next Steps")
+col_impact, col_future = st.columns(2)
+
+with col_impact:
+    st.markdown("""
+    <div class="info-card" style="border-left: 4px solid #3b82f6;">
+        <h4 style="color: #3b82f6;">🚀 Business Impact</h4>
+        <ul>
+            <li><strong>Reduces manual review effort:</strong> Saves hours of sorting through noisy data</li>
+            <li><strong>Speeds up issue identification:</strong> Catches emerging bugs or pain points early</li>
+            <li><strong>Improves product decision-making:</strong> Backs up hypotheses with quantified user verbatims</li>
+        </ul>
+    </div>
+    """, unsafe_allow_html=True)
+
+with col_future:
+    st.markdown("""
+    <div class="info-card" style="border-left: 4px solid #eab308;">
+        <h4 style="color: #eab308;">🔮 Future Improvements</h4>
+        <ul>
+            <li>Advanced sentiment analysis on specific app features</li>
+            <li>Multi-platform integration (App Store, Twitter)</li>
+            <li>Real-time alerts and live conversational dashboard</li>
+        </ul>
+    </div>
+    """, unsafe_allow_html=True)
+
+st.write("")
 
 # -- FOOTER --
 st.markdown("---")
