@@ -15,7 +15,7 @@ def configure_gemini():
     api_key = get_config("GEMINI_API_KEY")
     if not api_key or api_key == "your_gemini_api_key_here":
         raise ValueError("GEMINI_API_KEY is not set correctly.")
-    genai.configure(api_key=api_key)
+    genai.configure(api_key=api_key.strip())
 
 def load_json(filepath):
     if not os.path.exists(filepath):

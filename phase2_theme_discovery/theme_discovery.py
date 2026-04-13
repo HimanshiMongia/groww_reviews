@@ -17,7 +17,7 @@ def get_groq_client():
     api_key = get_config("GROQ_API_KEY")
     if not api_key or api_key == "your_groq_api_key_here":
         raise ValueError("GROQ_API_KEY is not set correctly.")
-    return Groq(api_key=api_key)
+    return Groq(api_key=api_key.strip())
 
 def load_reviews(filepath):
     """Loads cleaned reviews from Phase 1."""

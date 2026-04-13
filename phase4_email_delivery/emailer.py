@@ -121,6 +121,10 @@ def send_email(html_content, subject=None):
     sender_password = get_config("EMAIL_PASSWORD")
     receiver_email = get_config("EMAIL_RECEIVER")
     
+    if sender_email: sender_email = sender_email.strip()
+    if sender_password: sender_password = sender_password.strip()
+    if receiver_email: receiver_email = receiver_email.strip()
+    
     if not sender_email or not sender_password or not receiver_email:
         print("\n[WARNING] Email credentials not configured in .env file.")
         print("To send emails, add the following to your .env:")
